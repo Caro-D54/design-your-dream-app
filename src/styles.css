@@ -19,6 +19,18 @@
  */
 
 @theme inline {
+  --color-abyss: #04272b;
+  --color-deep: #0a3f45;
+  --color-deepest: #062c31;
+  --color-glass: #cfeef0;
+  --color-ink: #032024;
+  --color-mint: #63e6cf;
+  --color-safe: #2fd39a;
+  --color-warn: #f2a63a;
+  --color-alert: #ef5a4b;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -26,6 +38,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -141,4 +154,51 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+}
+
+/* MedScan AI — deep teal clinical direction */
+:root {
+  --background: oklch(0.26 0.045 195);
+  --foreground: oklch(0.92 0.045 190);
+  --card: oklch(0.3 0.05 195);
+  --card-foreground: oklch(0.92 0.045 190);
+  --primary: oklch(0.85 0.13 174);
+  --primary-foreground: oklch(0.22 0.04 197);
+  --muted: oklch(0.32 0.04 196);
+  --muted-foreground: oklch(0.78 0.03 190);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.85 0.13 174);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes settle {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes snap {
+  0% { transform: scale(1); }
+  42% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@utility app-aurora {
+  background:
+    radial-gradient(60% 45% at 50% -8%, hsl(178 60% 38% / 0.55), transparent 70%),
+    radial-gradient(55% 42% at 92% 12%, hsl(168 55% 26% / 0.45), transparent 70%),
+    radial-gradient(70% 55% at 8% 34%, hsl(174 50% 22% / 0.5), transparent 72%),
+    linear-gradient(180deg, #0a3f45 0%, #04272b 100%);
+}
+
+@utility app-grain {
+  background:
+    repeating-radial-gradient(circle at 25% 22%, transparent 0 12px, hsl(176 60% 60% / 0.05) 12px 13px),
+    repeating-radial-gradient(circle at 78% 60%, transparent 0 16px, hsl(170 60% 60% / 0.05) 16px 17px);
+}
+
+body {
+  font-family: var(--font-body);
 }
