@@ -25,7 +25,7 @@ export const Route = createFileRoute("/dosis")({
 });
 
 function Doses() {
-  const [openId, setOpenId] = useState(treatments[0].id);
+  const [openId, setOpenId] = useState(treatments[0]?.id ?? "");
 
   return (
     <AppShell>

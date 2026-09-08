@@ -69,13 +69,16 @@ function Home() {
       </section>
 
       <div className="mt-5">
-        <InteractionCard
-          severity={alert.severity}
-          title={alert.title}
-          body={alert.body}
-          action="Ver guía de interacción"
-        />
+        {alert ? (
+          <InteractionCard
+            severity={alert.severity}
+            title={alert.title}
+            body={alert.body}
+            action="Ver guía de interacción"
+          />
+        ) : null}
       </div>
+
 
       <div className="mt-6 flex items-center justify-between">
         <h2 className="font-mono text-[11px] tracking-[0.2em] text-glass/50 uppercase">Tratamientos activos</h2>
