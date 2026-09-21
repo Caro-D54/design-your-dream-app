@@ -14,7 +14,181 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dose_logs: {
+        Row: {
+          dose_day: string
+          dose_time: string
+          id: string
+          medication_id: string
+          taken_at: string
+          user_id: string
+        }
+        Insert: {
+          dose_day: string
+          dose_time: string
+          id?: string
+          medication_id: string
+          taken_at?: string
+          user_id: string
+        }
+        Update: {
+          dose_day?: string
+          dose_time?: string
+          id?: string
+          medication_id?: string
+          taken_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dose_logs_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medications: {
+        Row: {
+          active: boolean
+          condition: string | null
+          created_at: string
+          dose: string
+          guide: string[]
+          id: string
+          meal: string
+          name: string
+          notify: boolean
+          remind_minutes: number
+          strength: string | null
+          times: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          condition?: string | null
+          created_at?: string
+          dose?: string
+          guide?: string[]
+          id?: string
+          meal?: string
+          name: string
+          notify?: boolean
+          remind_minutes?: number
+          strength?: string | null
+          times?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          condition?: string | null
+          created_at?: string
+          dose?: string
+          guide?: string[]
+          id?: string
+          meal?: string
+          name?: string
+          notify?: boolean
+          remind_minutes?: number
+          strength?: string | null
+          times?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          allergies: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          reminder_minutes: number
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          allergies?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          reminder_minutes?: number
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          allergies?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          reminder_minutes?: number
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reminder_sends: {
+        Row: {
+          dose_day: string
+          dose_time: string
+          id: string
+          medication_id: string
+          sent_at: string
+        }
+        Insert: {
+          dose_day: string
+          dose_time: string
+          id?: string
+          medication_id: string
+          sent_at?: string
+        }
+        Update: {
+          dose_day?: string
+          dose_time?: string
+          id?: string
+          medication_id?: string
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminder_sends_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
