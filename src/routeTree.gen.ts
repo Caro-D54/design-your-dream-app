@@ -10,13 +10,26 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DosisRouteImport } from './routes/dosis'
 import { Route as EscanerRouteImport } from './routes/escaner'
 import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as AuthenticatedHoyRouteImport } from './routes/_authenticated/hoy'
+import { Route as ApiPublicHooksDoseRemindersRouteImport } from './routes/api/public/hooks/dose-reminders'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DosisRoute = DosisRouteImport.update({
@@ -34,39 +47,86 @@ const PerfilRoute = PerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedHoyRoute = AuthenticatedHoyRouteImport.update({
+  id: '/hoy',
+  path: '/hoy',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiPublicHooksDoseRemindersRoute =
+  ApiPublicHooksDoseRemindersRouteImport.update({
+    id: '/api/public/hooks/dose-reminders',
+    path: '/api/public/hooks/dose-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/dosis': typeof DosisRoute
   '/escaner': typeof EscanerRoute
   '/perfil': typeof PerfilRoute
+  '/hoy': typeof AuthenticatedHoyRoute
+  '/api/public/hooks/dose-reminders': typeof ApiPublicHooksDoseRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/dosis': typeof DosisRoute
   '/escaner': typeof EscanerRoute
   '/perfil': typeof PerfilRoute
+  '/hoy': typeof AuthenticatedHoyRoute
+  '/api/public/hooks/dose-reminders': typeof ApiPublicHooksDoseRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/dosis': typeof DosisRoute
   '/escaner': typeof EscanerRoute
   '/perfil': typeof PerfilRoute
+  '/_authenticated/hoy': typeof AuthenticatedHoyRoute
+  '/api/public/hooks/dose-reminders': typeof ApiPublicHooksDoseRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dosis' | '/escaner' | '/perfil'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dosis'
+    | '/escaner'
+    | '/perfil'
+    | '/hoy'
+    | '/api/public/hooks/dose-reminders'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dosis' | '/escaner' | '/perfil'
-  id: '__root__' | '/' | '/dosis' | '/escaner' | '/perfil'
+  to:
+    | '/'
+    | '/auth'
+    | '/dosis'
+    | '/escaner'
+    | '/perfil'
+    | '/hoy'
+    | '/api/public/hooks/dose-reminders'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/dosis'
+    | '/escaner'
+    | '/perfil'
+    | '/_authenticated/hoy'
+    | '/api/public/hooks/dose-reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   DosisRoute: typeof DosisRoute
   EscanerRoute: typeof EscanerRoute
   PerfilRoute: typeof PerfilRoute
+  ApiPublicHooksDoseRemindersRoute: typeof ApiPublicHooksDoseRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,6 +136,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dosis': {
@@ -99,14 +173,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/hoy': {
+      id: '/_authenticated/hoy'
+      path: '/hoy'
+      fullPath: '/hoy'
+      preLoaderRoute: typeof AuthenticatedHoyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/hooks/dose-reminders': {
+      id: '/api/public/hooks/dose-reminders'
+      path: '/api/public/hooks/dose-reminders'
+      fullPath: '/api/public/hooks/dose-reminders'
+      preLoaderRoute: typeof ApiPublicHooksDoseRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedHoyRoute: typeof AuthenticatedHoyRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedHoyRoute: AuthenticatedHoyRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   DosisRoute: DosisRoute,
   EscanerRoute: EscanerRoute,
   PerfilRoute: PerfilRoute,
+  ApiPublicHooksDoseRemindersRoute: ApiPublicHooksDoseRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
