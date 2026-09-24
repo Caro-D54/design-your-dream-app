@@ -2,15 +2,16 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 const tabs = [
-  { to: "/", label: "Inicio", shape: "square-solid" },
+  { to: "/hoy", label: "Hoy", shape: "square-solid" },
   { to: "/escaner", label: "Escáner", shape: "circle" },
   { to: "/dosis", label: "Dosis", shape: "square" },
+  { to: "/medicamentos", label: "Mis meds", shape: "circle" },
   { to: "/perfil", label: "Perfil", shape: "circle" },
 ] as const;
 
-function TabIcon({ shape, active }: { shape: string; active: boolean }) {
+function TabIcon({ shape }: { shape: string }) {
   if (shape === "square-solid") {
-    return <span className={`block h-3 w-3 rounded-[3px] ${active ? "bg-mint" : "bg-current"}`} />;
+    return <span className="block h-3 w-3 rounded-[3px] bg-current" />;
   }
   if (shape === "square") {
     return <span className="block h-3 w-3 rounded-[3px] border-2 border-current" />;
@@ -29,14 +30,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-[390px] px-4 pb-5">
-        <nav className="flex items-center justify-between rounded-2xl bg-white/10 px-3 py-2 ring-1 ring-white/15 backdrop-blur-md">
+        <nav className="flex items-center justify-between rounded-2xl bg-white/10 px-2 py-2 ring-1 ring-white/15 backdrop-blur-md">
           {tabs.map((tab) => (
             <Link
               key={tab.to}
               to={tab.to}
               className="flex flex-1 flex-col items-center gap-1 py-1.5 text-glass/60"
               activeProps={{ className: "text-mint" }}
-              activeOptions={{ exact: tab.to === "/" }}
             >
               {({ isActive }) => (
                 <>
@@ -45,9 +45,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                       isActive ? "bg-mint/15 ring-1 ring-mint/30" : ""
                     }`}
                   >
-                    <TabIcon shape={tab.shape} active={isActive} />
+                    <TabIcon shape={tab.shape} />
                   </span>
-                  <span className="font-mono text-[10px]">{tab.label}</span>
+                  <span className="font-mono text-[9px]">{tab.label}</span>
                 </>
               )}
             </Link>
