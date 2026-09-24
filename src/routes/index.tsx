@@ -1,8 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { AppShell, ScreenHeader } from "@/components/AppShell";
-import { InteractionCard } from "@/components/InteractionCard";
-import { interactions, nextDose, treatments, user } from "@/data/med";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -11,127 +9,76 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "MedScan AI organiza tus tratamientos: próxima dosis, alertas de interacción y guía de toma con las comidas.",
+          "MedScan AI lee la etiqueta de tus medicamentos, organiza cada dosis y te avisa en el celular antes de tomarla.",
       },
       { property: "og:title", content: "MedScan AI · Tu medicación al día" },
       {
         property: "og:description",
-        content: "Próxima dosis, tratamientos activos y alertas de interacción en una sola pantalla.",
+        content: "Escaneá la caja, cargá tu plan y recibí avisos de cada dosis en el celular.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Home,
+  component: Landing,
 });
 
-function Home() {
-  const [taken, setTaken] = useState<string[]>(treatments.filter((t) => t.taken).map((t) => t.id));
-  const [doseTaken, setDoseTaken] = useState(false);
+const points = [
+  { title: "Escaneá la etiqueta", body: "La cámara lee el nombre, la dosis y la frecuencia impresas en la caja." },
+  { title: "Avisos en el celular", body: "Te llega una notificación minutos antes de cada toma, sin abrir la app." },
+  { title: "Compatibilidad", body: "Te avisamos cuando dos medicamentos de tu plan conviene separarlos." },
+];
 
-  const toggle = (id: string) =>
-    setTaken((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+function Landing() {
+  const navigate = useNavigate();
 
-  const alert = interactions[0];
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => {
+      if (data.session) void navigate({ to: "/hoy" });
+    });
+  }, [navigate]);
 
   return (
-    <AppShell>
-      <ScreenHeader eyebrow={user.today} title={`Hola, ${user.name}`} badge={user.initials} />
+    <div className="relative min-h-screen w-full overflow-hidden bg-abyss font-body text-glass">
+      <div className="app-aurora pointer-events-none absolute inset-0" />
+      <div className="app-grain pointer-events-none absolute inset-0 opacity-50" />
 
-      <section className="relative mt-5 animate-[rise_.5s_cubic-bezier(.32,.72,0,1)_.08s_both] rounded-[22px] bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur-md">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-        <div className="flex items-center justify-between">
-          <span className="rounded-full bg-mint/15 px-2.5 py-1 font-mono text-[10px] tracking-wider text-mint uppercase ring-1 ring-mint/30">
-            Próxima dosis
-          </span>
-          <span className="font-mono text-xs text-glass/70">{nextDose.at}</span>
-        </div>
-        <div className="mt-4 flex items-end justify-between">
-          <div>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-glass">{nextDose.name}</h1>
-            <p className="mt-1 font-body text-sm text-glass/70">{nextDose.detail}</p>
-          </div>
-          <div className="flex gap-1.5 pt-1">
-            {Array.from({ length: nextDose.pills }).map((_, i) => (
-              <span key={i} className="size-4 rounded-full bg-glass/80 ring-1 ring-white/40" />
-            ))}
-          </div>
-        </div>
-        <button
-          onClick={() => setDoseTaken((v) => !v)}
-          className="group mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-mint px-4 py-3 font-display text-sm font-semibold text-ink transition-colors duration-200 hover:bg-white"
-        >
-          <span className="grid size-5 place-items-center rounded-full bg-ink text-mint transition-transform duration-200 group-hover:rotate-45">
-            <span className="block h-2.5 w-0.5 bg-mint" />
-          </span>
-          {doseTaken ? "Dosis registrada" : "Marcar como tomada"}
-        </button>
-      </section>
+      <div className="relative mx-auto flex min-h-screen w-full max-w-[390px] flex-col px-5 py-12">
+        <p className="font-mono text-[10px] tracking-[0.22em] text-mint uppercase">MedScan AI</p>
+        <h1 className="mt-3 font-display text-[34px] leading-[1.05] font-bold tracking-tight">
+          Tu medicación,
+          <br />
+          al día y sin dudas.
+        </h1>
+        <p className="mt-3 font-body text-sm leading-relaxed text-glass/70">
+          Cargá tus tratamientos una vez y MedScan te recuerda cada dosis, con la guía de toma de cada medicamento.
+        </p>
 
-      <div className="mt-5">
-        {alert ? (
-          <InteractionCard
-            severity={alert.severity}
-            title={alert.title}
-            body={alert.body}
-            action="Ver guía de interacción"
-          />
-        ) : null}
-      </div>
-
-
-      <div className="mt-6 flex items-center justify-between">
-        <h2 className="font-mono text-[11px] tracking-[0.2em] text-glass/50 uppercase">Tratamientos activos</h2>
-        <span className="font-mono text-[11px] text-glass/60">{treatments.length} en curso</span>
-      </div>
-
-      <section className="mt-3 flex flex-col gap-2.5">
-        {treatments.map((t, i) => {
-          const isTaken = taken.includes(t.id);
-          return (
+        <div className="mt-8 flex flex-col gap-2.5">
+          {points.map((p, i) => (
             <div
-              key={t.id}
-              className="flex animate-[settle_.5s_cubic-bezier(.32,.72,0,1)_both] items-center gap-3 rounded-2xl bg-white/8 p-3.5 ring-1 ring-white/10"
-              style={{ animationDelay: `${0.24 + i * 0.06}s` }}
+              key={p.title}
+              className="animate-[settle_.5s_cubic-bezier(.32,.72,0,1)_both] rounded-2xl bg-white/8 p-4 ring-1 ring-white/10"
+              style={{ animationDelay: `${0.1 + i * 0.07}s` }}
             >
-              <span
-                className={`grid size-9 shrink-0 place-items-center rounded-full font-mono text-xs ring-1 ${
-                  t.severity === "warn"
-                    ? "bg-warn/15 text-warn ring-warn/40"
-                    : "bg-mint/15 text-mint ring-mint/40"
-                }`}
-              >
-                {t.hour}
-              </span>
-              <Link to="/dosis" className="min-w-0 flex-1">
-                <p className="truncate font-body text-sm font-semibold text-glass">{t.name}</p>
-                <p className="font-mono text-[11px] text-glass/55">{t.schedule}</p>
-              </Link>
-              <button
-                aria-label={isTaken ? "Marcar como pendiente" : "Marcar como tomada"}
-                onClick={() => toggle(t.id)}
-                className={`grid size-7 shrink-0 place-items-center rounded-full transition-colors ${
-                  isTaken ? "bg-mint text-ink" : "bg-transparent ring-1 ring-white/25"
-                }`}
-                style={isTaken ? { animation: "snap .6s cubic-bezier(.34,1.56,.64,1) both" } : undefined}
-              >
-                {isTaken ? (
-                  <span
-                    style={{
-                      width: 0,
-                      height: 0,
-                      borderLeft: "4px solid transparent",
-                      borderRight: "4px solid transparent",
-                      borderBottom: "7px solid #032024",
-                      transform: "translateY(-1px)",
-                    }}
-                  />
-                ) : null}
-              </button>
+              <p className="font-body text-sm font-semibold text-glass">{p.title}</p>
+              <p className="mt-1 font-mono text-[11px] leading-relaxed text-glass/60">{p.body}</p>
             </div>
-          );
-        })}
-      </section>
-    </AppShell>
+          ))}
+        </div>
+
+        <div className="mt-auto pt-10">
+          <Link
+            to="/auth"
+            className="block rounded-xl bg-mint py-3.5 text-center font-display text-sm font-semibold text-ink transition-colors hover:bg-white"
+          >
+            Empezar
+          </Link>
+          <p className="mt-3 text-center font-mono text-[10px] text-glass/45">
+            MedScan AI no reemplaza la indicación de tu médico.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
